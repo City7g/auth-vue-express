@@ -3,7 +3,7 @@ const app = express();
 const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 
-const PORT = process.env.PORT || 80
+const PORT = process.env.PORT || 3000
 
 const verifyToken = require("./routes/verifyToken");
 
@@ -20,6 +20,10 @@ mongoose.connect(
 app.use(express.json());
 
 const authRoute = require("./routes/auth");
+
+app.use('/home', (req, res) => {
+  res.send('Hello')
+})
 
 app.use("/api/user", authRoute);
 
