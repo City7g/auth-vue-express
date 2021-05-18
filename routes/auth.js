@@ -6,11 +6,12 @@ const { registerValidation, loginValidation } = require("../validation");
 router.post("/register", async (req, res) => {
   // Validation
   const validation = registerValidation(req.body);
-  if (validation.error) return res.send(validation.error.details[0].message);
+  if (validation.error)
+    return res.status(400).send(validation.error.details[0].message);
 
   // Checking unique email
-  const emailExist = await User.findOne({ name: req.body.name });
-  if (emailExist) return res.send("Email already exists");
+  const emailExist = await User.findOne({ email: req.body.email });
+  if (emailExist) return res.status(400).send("Email already exists");
 
   // Create new user
   const user = new User({
@@ -19,8 +20,12 @@ router.post("/register", async (req, res) => {
     password: req.body.password,
   });
   try {
+    // Create user in Mongo
     const savedUser = await user.save();
-    res.send(savedUser);
+
+    // Send token
+    let token = jwt.sign({ _id: savedUser._id }, process.env.SECRET_TOKEN);
+    res.send({ token, savedUser });
   } catch (err) {
     res.status(400).send(err);
   }
@@ -29,16 +34,18 @@ router.post("/register", async (req, res) => {
 router.post("/login", async (req, res) => {
   // Validation
   const validation = await loginValidation(req.body);
-  if (validation.error) return res.send(validation.error.details[0].message);
+  if (validation.error)
+    return res.status(400).send(validation.error.details[0].message);
 
   // Checking email and password
   const user = await User.findOne({ email: req.body.email });
-  if (!user) return res.send("Email is not found");
-  if (user.password !== req.body.password) return res.send("Password invalid");
+  if (!user) return res.status(400).send("Email is not found");
+  if (user.password !== req.body.password)
+    return res.status(400).send("Password invalid");
 
   // Send token
-  let token = jwt.sign({ _id: user._id }, 'some-text');
-  res.send(token);
+  let token = jwt.sign({ _id: user._id }, process.env.SECRET_TOKEN);
+  res.send({ token, user });
 });
 
 module.exports = router;

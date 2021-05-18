@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+const cors = require("cors");
 const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 
@@ -9,14 +10,14 @@ const verifyToken = require("./routes/verifyToken");
 
 dotenv.config();
 
+app.use(cors());
+
 try {
   mongoose.connect(
     "mongodb+srv://Dima:2010dimaD@cluster0.4gspp.mongodb.net/User?retryWrites=true&w=majority",
     {
       useNewUrlParser: true,
       useUnifiedTopology: true,
-      keepAlive: 300000,
-      connectTimeoutMS: 30000,
     },
     () => {
       console.log("connect to db");
@@ -29,6 +30,7 @@ try {
 app.use(express.json());
 
 const authRoute = require("./routes/auth");
+const manageUser = require("./routes/manage");
 
 app.use("/home", (req, res) => {
   res.send("Hello");
@@ -36,9 +38,8 @@ app.use("/home", (req, res) => {
 
 app.use("/api/user", authRoute);
 
-app.get("/posts", verifyToken, (req, res) => {
-  res.send(req.user);
-});
+// app.use("/user", verifyToken, manageUser);
+app.use("/user", manageUser);
 
 app.listen(PORT, () => {
   console.log("Server starting");
