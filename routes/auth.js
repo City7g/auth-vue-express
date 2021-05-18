@@ -32,11 +32,7 @@ router.post("/login", async (req, res) => {
   if (validation.error) return res.send(validation.error.details[0].message);
 
   // Checking email and password
-  try {
-    const user = await User.findOne({ email: req.body.email });
-  } catch (err) {
-    console.log(err)
-  }
+  const user = await User.findOne({ email: req.body.email });
   if (!user) return res.send("Email is not found");
   if (user.password !== req.body.password) return res.send("Password invalid");
 
