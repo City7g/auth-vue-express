@@ -28,11 +28,15 @@ router.post("/register", async (req, res) => {
 
 router.post("/login", async (req, res) => {
   // Validation
-  const validation = loginValidation(req.body);
+  const validation = await loginValidation(req.body);
   if (validation.error) return res.send(validation.error.details[0].message);
 
   // Checking email and password
-  const user = await User.findOne({ email: req.body.email });
+  try {
+    const user = await User.findOne({ email: req.body.email });
+  } catch (err) {
+    console.log(err)
+  }
   if (!user) return res.send("Email is not found");
   if (user.password !== req.body.password) return res.send("Password invalid");
 
