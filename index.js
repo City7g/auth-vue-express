@@ -15,10 +15,8 @@ try {
     {
       useNewUrlParser: true,
       useUnifiedTopology: true,
-      socketOptions: {
-        keepAlive: 300000,
-        connectTimeoutMS: 30000,
-      },
+      keepAlive: 300000,
+      connectTimeoutMS: 30000,
     },
     () => {
       console.log("connect to db");
