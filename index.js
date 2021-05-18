@@ -12,13 +12,22 @@ dotenv.config();
 try {
   mongoose.connect(
     "mongodb+srv://Dima:2010dimaD@cluster0.4gspp.mongodb.net/User?retryWrites=true&w=majority",
-    { useNewUrlParser: true, useUnifiedTopology: true },
+    {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      server: {
+        socketOptions: {
+          keepAlive: 300000,
+          connectTimeoutMS: 30000,
+        },
+      },
+    },
     () => {
       console.log("connect to db");
     }
   );
 } catch (err) {
-  console.log(err)
+  console.log(err);
 }
 
 app.use(express.json());
